@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/revel/config"
 	r "github.com/revel/revel"
+	"path/filepath"
 	"strings"
 )
 
@@ -13,11 +15,19 @@ type GormController struct {
 	DB *gorm.DB
 }
 
-func getConfigParam(param string, defaultValue string) string {
-	p, found := r.Config.String(param)
-	if !found {
+func getConfigParam(configFile string, section string, param string, defaultValue string) string {
+	c, err := config.ReadDefault(configFile)
+	if err != nil {
 		if defaultValue == "" {
-			r.ERROR.Fatal("Cound not find parameter: " + param)
+			r.ERROR.Fatal("Cound not find conf file: " + configFile)
+		} else {
+			return defaultValue
+		}
+	}
+	p, err_read := c.String(section, param)
+	if err_read != nil {
+		if defaultValue == "" {
+			r.ERROR.Fatal("Cound not find section/parameter: " + section + " / " + param)
 		} else {
 			return defaultValue
 		}
@@ -26,13 +36,17 @@ func getConfigParam(param string, defaultValue string) string {
 }
 
 func getConnectionString() string {
-	host := getConfigParam("db.host", "")
-	port := getConfigParam("db.port", "3306")
-	user := getConfigParam("db.user", "")
-	pass := getConfigParam("db.password", "")
-	dbname := getConfigParam("db.name", "")
-	protocol := getConfigParam("db.protocol", "tcp")
-	dbargs := getConfigParam("db.args", " ")
+	// TOOD: set path
+	apath, _ := filepath.Abs("./")
+	fmt.Println(apath)
+	db_conf := "./conf/db.conf"
+	host := getConfigParam(db_conf, "database", "db.host", "")
+	port := getConfigParam(db_conf, "database", "db.port", "3306")
+	user := getConfigParam(db_conf, "database", "db.user", "")
+	pass := getConfigParam(db_conf, "database", "db.password", "")
+	dbname := getConfigParam(db_conf, "database", "db.name", "")
+	protocol := getConfigParam(db_conf, "database", "db.protocol", "tcp")
+	dbargs := getConfigParam(db_conf, "database", "db.args", " ")
 	if strings.Trim(dbargs, " ") != "" {
 		dbargs = "?" + dbargs
 	} else {
@@ -45,9 +59,6 @@ func getConnectionString() string {
 var Gdb *gorm.DB
 
 func InitDB() {
-	r.Config.LoadContext("db.conf", ConfPaths)
-	// r.LoadConfig("db.conf")
-	// r.ConfPaths = []string{"/myapp/conf/app.conf", "/myapp/conf/db.conf"}
 	var err error
 	connectionString := getConnectionString()
 	Gdb, err = gorm.Open("mysql", connectionString)
