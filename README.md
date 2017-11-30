@@ -33,6 +33,14 @@ $GOPATH -> ${GOPATH}
 sh glide_install.sh
 ```
 
+- create
+```
+cd /your/working/dir/
+glide create
+
+cat glide.yaml
+```
+
 ## revel
 
 - install
@@ -57,5 +65,18 @@ $ glide install
 - install
 ```
 go get -u github.com/jinzhu/gorm
-'''
+```
 
+- create db conf
+```
+$ vim conf/db.fonf
+
+[database]
+db.host:       0.0.0.0
+db.port:       3306
+db.user:       your_user
+db.password:   ***
+db.name:       your_db
+db.protocol:   tcp
+db.args:       charset=utf8&parseTime=True&loc=Local
+```
