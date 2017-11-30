@@ -37,6 +37,8 @@ func getConfigParam(configFile string, section string, param string, defaultValu
 
 func getConnectionString() string {
 	// TOOD: set path
+	// use ReadDefault here or use Read
+	// https://godoc.org/github.com/revel/config#Read
 	apath, _ := filepath.Abs("./")
 	fmt.Println(apath)
 	db_conf := "./conf/db.conf"

@@ -2,9 +2,10 @@ package models
 
 // import (
 // 	"fmt"
-// 	"github.com/revel/revel"
-// 	"regexp"
-// 	"time"
+// 	// "github.com/revel/revel"
+// 	// "myapp/app/controllers"
+// 	// 	"regexp"
+// 	// 	"time"
 // )
 
 type Book struct {
